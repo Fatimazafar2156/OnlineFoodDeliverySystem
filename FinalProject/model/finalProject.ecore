@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="finalProject" nsURI="http://www.example.org/finalProject" nsPrefix="finalProject">
+  <eAnnotations source="http://www.eclipse.org/OCL/Import">
+    <details key="ecore" value="http://www.eclipse.org/emf/2002/Ecore"/>
+    <details key="ecore.xml.type" value="http://www.eclipse.org/emf/2003/XMLType"/>
+  </eAnnotations>
+  <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+    <details key="invocationDelegates" value="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot"/>
+    <details key="settingDelegates" value="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot"/>
+    <details key="validationDelegates" value="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot"/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="Order">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="AtLeastOneMenuItem AssignedDeliveryBeforeDelivery ValidStatusSequence RefundOnCancel DispatchTimeCheck RefundAmountLogic SingleBestDiscount NonNegativeDeliveryFee FutureEstimatedTime"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+      <details key="AtLeastOneMenuItem" value="&#xA;&#x9;&#x9;self.items->size() >= 1"/>
+      <details key="AssignedDeliveryBeforeDelivery" value="&#xA;&#x9;&#x9;self.deliveryStatus = orderdeliveryStatus::DELIVERED implies self.assignedTo->notEmpty()"/>
+      <details key="ValidStatusSequence" value="&#xA;&#x9;&#x9;(self.deliveryStatus = orderdeliveryStatus::PROCESSING implies self.status = 'PLACED') and&#xA;&#x9;&#x9;(self.deliveryStatus = orderdeliveryStatus::DISPATCHED implies self.status = 'PROCESSING') and&#xA;&#x9;&#x9;(self.deliveryStatus = orderdeliveryStatus::DELIVERED implies self.status = 'DISPATCHED') or&#xA;&#x9;&#x9;self.deliveryStatus = orderdeliveryStatus::CANCELLED"/>
+      <details key="RefundOnCancel" value="&#xA;&#x9;&#x9;self.deliveryStatus = orderdeliveryStatus::CANCELLED and self.payment.status = PaymentStatus::PAID implies &#xA;&#x9;&#x9;self.payment.isRefunded = true"/>
+      <details key="DispatchTimeCheck" value="&#xA;            self.deliveryStatus = orderdeliveryStatus::DISPATCHED implies&#xA;            self.isDelayed "/>
+      <details key="RefundAmountLogic" value="&#xA;&#x9;    self.deliveryStatus = orderdeliveryStatus::CANCELLED and&#xA;&#x9;    self.payment->notEmpty() and&#xA;&#x9;    self.payment->exists(p | p.status = PaymentStatus::PAID and p.amount &lt;> null) and&#xA;&#x9;    self.serviceFee &lt;> null implies&#xA;&#x9;    self.refundAmount = self.payment->any(true).amount - self.serviceFee"/>
+      <details key="SingleBestDiscount" value="&#xA;         self.appliedCoupon.oclIsUndefined() or (&#xA;         DiscountCoupon.allInstances()->forAll(c |&#xA;           c.applicableRestaurant = self.RestarauntsVisited.name and&#xA;           c.isValid and not c.isUsed implies&#xA;          c.amount &lt;= self.appliedCoupon.amount))"/>
+      <details key="NonNegativeDeliveryFee" value="&#xA;           self.deliveryFee.oclIsUndefined() or self.deliveryFee >= 0"/>
+      <details key="FutureEstimatedTime" value="&#xA;         self.deliveryStatus = orderdeliveryStatus::DISPATCHED implies&#xA;         self.RestarauntsVisited->notEmpty() and not self.areaCode.oclIsUndefined() and not&#xA;         self.RestarauntsVisited->any(true).areaCode.oclIsUndefined() and if &#xA;         self.RestarauntsVisited->any(true).areaCode = self.areaCode  then self.estimatedDeliveryTime > 15 &#xA;         else self.estimatedDeliveryTime > 30   endif"/>
+    </eAnnotations>
+    <eOperations name="markDelivered" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="pre_" value="&#xA;&#x9;&#x9;o.deliveryStatus = orderdeliveryStatus::DISPATCHED and&#xA;&#x9;&#x9;self.areaCode = o.areaCode"/>
+        <details key="post_" value="&#xA;&#x9;&#x9;o.deliveryStatus = orderdeliveryStatus::DELIVERED and&#xA;&#x9;&#x9;self.assignedTo.completedOrders = self.assignedTo.completedOrders@pre + 1 and&#xA;&#x9;&#x9;let c : Customer = o.customer->any(true) in&#xA;&#x9;    c.loyalitypoints = c.loyalitypoints@pre + (o.totalPrice * 0.05)"/>
+      </eAnnotations>
+      <eParameters name="o" lowerBound="1" eType="#//Order"/>
+    </eOperations>
+    <eOperations name="assignDeliveryAgent" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="pre_" value="&#xA;&#x9;&#x9;self.deliveryStatus = orderdeliveryStatus::READY_FOR_DELIVERY and&#xA;&#x9;&#x9;agent.status = DeliveryAgentStatus::AVAILABLE and&#xA;&#x9;&#x9;self.areaCode = agent.areaCode"/>
+        <details key="post_" value="&#xA;&#x9;&#x9;self.deliveryStatus = orderdeliveryStatus::DISPATCHED and&#xA;&#x9;&#x9;agent.delivers->includes(self)"/>
+      </eAnnotations>
+      <eParameters name="agent" eType="#//DeliveryAgent"/>
+    </eOperations>
+    <eOperations name="updateDeliveryStatus" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="pre_" value="&#xA;        self.deliveryStatus = orderdeliveryStatus::DISPATCHED and&#xA;        (newStatus = orderdeliveryStatus::ON_THE_WAY or newStatus = orderdeliveryStatus::CANCELLED or newStatus = orderdeliveryStatus::DELIVERED or newStatus=isDelayed)"/>
+        <details key="post_" value="&#xA;        self.deliveryStatus = newStatus and&#xA;        (newStatus = orderdeliveryStatus::CANCELLED implies&#xA;            self.isDelayed = true)"/>
+      </eAnnotations>
+      <eParameters name="newStatus" eType="#//orderdeliveryStatus"/>
+    </eOperations>
+    <eOperations name="calculateDistance" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eOperations name="reviewOrder" eType="#//Review">
+      <eParameters name="comment" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eParameters name="rating" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    </eOperations>
+    <eOperations name="applyDiscount" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="pre_" value="&#xA;         coupon.isValid = true and&#xA;         self.appliedCoupon->isEmpty()"/>
+        <details key="post_" value="&#xA;         self.finalPrice = self.finalPrice@pre - coupon.amount and&#xA;         coupon.isUsed = true"/>
+      </eAnnotations>
+      <eParameters name="coupon" lowerBound="1" eType="#//DiscountCoupon"/>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="previousStatus" eType="#//orderdeliveryStatus"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="estimatedDeliveryTime"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"
+        derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="derivation" value="if self.RestarauntsVisited->any(true).areaCode = self.areaCode   then 20 else 45 endif"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="creationTime" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//DateTime"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deliveryStatus" eType="#//orderdeliveryStatus"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="finalPrice" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//DoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="totalPrice" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//DoubleObject"
+        derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="derivation" value="if self.items->isEmpty() or self.deliveryFee.oclIsUndefined() then null&#xA;               else self.items->collect(i | i.price)->sum() + self.deliveryFee endif"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="refundAmount" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//DoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isDelayed" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deliveryFee" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//DoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="location" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="areaCode" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="status" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="serviceFee" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//DoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="payment" ordered="false"
+        upperBound="-1" eType="#//Payment" containment="true">
+      <eAnnotations source="http://www.eclipse.org/OCL/Collection">
+        <details key="nullFree" value="false"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="writtenFor" eType="#//Review"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="items" lowerBound="1" upperBound="-1"
+        eType="#//MenuItem" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="assignedTo" eType="#//DeliveryAgent"
+        eOpposite="#//DeliveryAgent/delivers"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="customer" ordered="false"
+        upperBound="-1" eType="#//Customer" eOpposite="#//Customer/order">
+      <eAnnotations source="http://www.eclipse.org/OCL/Collection">
+        <details key="nullFree" value="false"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="RestarauntsVisited" upperBound="-1"
+        eType="#//Restaurant" eOpposite="#//Restaurant/CustomersServed"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="appliedCoupon" eType="#//DiscountCoupon"
+        eOpposite="#//DiscountCoupon/discountedOrder"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="orderdeliveryStatus">
+    <eLiterals name="PLACED"/>
+    <eLiterals name="PROCESSING" value="1"/>
+    <eLiterals name="READY_FOR_DELIVERY" value="2"/>
+    <eLiterals name="DISPATCHED" value="3"/>
+    <eLiterals name="ON_THE_WAY" value="4"/>
+    <eLiterals name="DELIVERED" value="5"/>
+    <eLiterals name="CANCELLED" value="6"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Payment">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="PaidOrderMustHavePayment UniqueTransactionId RefundOnlyForCancelled LongDistanceDeliveryFee"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+      <details key="PaidOrderMustHavePayment" value="&#xA;        Order.allInstances()->exists(o | o.payment = self) implies self.status = PaymentStatus::PAID"/>
+      <details key="UniqueTransactionId" value="&#xA;        Payment.allInstances()->isUnique(p | p.transactionId)"/>
+      <details key="RefundOnlyForCancelled" value="&#xA;        let o : Order = Order.allInstances()->any(o | o.payment = self) in&#xA;        self.isRefunded implies not o.oclIsUndefined() and o.deliveryStatus = orderdeliveryStatus::CANCELLED"/>
+      <details key="LongDistanceDeliveryFee" value="&#xA;        let o : Order = Order.allInstances()->any(x | x.payment = self) in&#xA;        if o.oclIsUndefined() then true&#xA;        else&#xA;            let r : Restaurant = Restaurant.allInstances()->any(res | o.items->forAll(i | res.offers->includes(i))) in&#xA;            if r.oclIsUndefined() then true&#xA;            else o.location - r.location > 10 implies o.deliveryFee >= 0.05 * o.totalPrice&#xA;            endif&#xA;        endif"/>
+    </eAnnotations>
+    <eOperations name="processRefund" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="transactionId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="amount" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//DoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="serviceFee" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//DoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isRefunded" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="status" eType="#//PaymentStatus"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Review">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="date" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="comment" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="rating" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rateng" ordered="false"
+        upperBound="-1" eType="#//Restaurant" eOpposite="#//Restaurant/reviewedRestaurant">
+      <eAnnotations source="http://www.eclipse.org/OCL/Collection">
+        <details key="nullFree" value="false"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="reviewer" ordered="false"
+        upperBound="-1" eType="#//Customer" eOpposite="#//Customer/reviews">
+      <eAnnotations source="http://www.eclipse.org/OCL/Collection">
+        <details key="nullFree" value="false"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DiscountCoupon">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="amount" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//DoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isValid" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="applicableRestaurant" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isUsed" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="discountedOrder" eType="#//Order"
+        eOpposite="#//Order/appliedCoupon"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="PaymentStatus">
+    <eLiterals name="PAID"/>
+    <eLiterals name="UNPAID" value="1"/>
+    <eLiterals name="REFUNDED" value="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DeliveryAgent">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="MaxThreeOrders OnlyIfAvailable WithinServiceArea NoOverlappingOrders Max15KMDistance"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+      <details key="MaxThreeOrders" value="&#xA;        self.delivers->select(o | o.deliveryStatus &lt;> orderdeliveryStatus::DELIVERED)->size() &lt;= 3"/>
+      <details key="OnlyIfAvailable" value="&#xA;        self.delivers->notEmpty() implies self.status = DeliveryAgentStatus::AVAILABLE"/>
+      <details key="WithinServiceArea" value="&#xA;        self.delivers->forAll(o | self.withinServiceArea(o))"/>
+      <details key="NoOverlappingOrders" value="&#xA;        self.delivers->forAll(o1, o2 | o1 &lt;> o2 implies o1.estimatedDeliveryTime &lt;> o2.estimatedDeliveryTime)"/>
+      <details key="Max15KMDistance" value="&#xA;        self.delivers->forAll(o | (o.location - self.currentLocation).abs() &lt;= 15)"/>
+    </eAnnotations>
+    <eOperations name="isAvailable" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eOperations name="withinServiceArea" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="body" value="&#xA;        if order.location.oclIsUndefined() or self.currentLocation.oclIsUndefined() then false &#xA;          else let distance : Integer = order.location - self.currentLocation in distance.abs() &lt;= 15 endif"/>
+      </eAnnotations>
+      <eParameters name="order" lowerBound="1" eType="#//Order"/>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="status" eType="#//DeliveryAgentStatus"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="currentLocation" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="completedOrders" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="assignedOrders" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="areaCode" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="delivers" upperBound="-1"
+        eType="#//Order" eOpposite="#//Order/assignedTo"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="resturauntsServerd" upperBound="-1"
+        eType="#//Restaurant" eOpposite="#//Restaurant/agentsdelivering"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="DeliveryAgentStatus">
+    <eLiterals name="AVAILABLE"/>
+    <eLiterals name="BUSY" value="1"/>
+    <eLiterals name="OFFLINE" value="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MenuItem">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="category" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//DoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="prepTime" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="instock" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Customer">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ValidContactInfo LoyaltyPointsNonNegative GoldTierDiscount ReviewOnlyIfDelivered"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+      <details key="ValidContactInfo" value="&#xA;&#x9;&#x9;&#x9;self.email &lt;> '' and self.phoneNo &lt;> ''"/>
+      <details key="LoyaltyPointsNonNegative" value="&#xA;&#x9;&#x9;&#x9;self.loyalitypoints.oclIsUndefined() or self.loyalitypoints >= 0"/>
+      <details key="GoldTierDiscount" value="&#xA;         self.isGoldTier and self.loyalitypoints >= 100 implies   self.order->forAll(o |  o.totalPrice > 50 implies (&#xA;        o.RestarauntsVisited->exists(r | not r.noDiscountPartnership) implies not o.appliedCoupon.oclIsUndefined() and o.appliedCoupon.amount >= 0.10 * o.totalPrice)  )"/>
+      <details key="ReviewOnlyIfDelivered" value="&#xA;        self.reviews->forAll(r | &#xA;         Order.allInstances()->exists(o | o.writtenFor = r and o.customer = self and o.deliveryStatus = orderdeliveryStatus::DELIVERED)&#xA;          )"/>
+    </eAnnotations>
+    <eOperations name="placeOrder" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="pre_" value="&#xA;        self.accountStatus = 'active' and&#xA;        o.RestarauntsVisited->forAll(r | r.isOpen) and&#xA;        o.items->forAll(i | i.instock = true)"/>
+        <details key="post_" value="&#xA;        result = o and&#xA;        o.deliveryStatus = orderdeliveryStatus::PLACED and&#xA;        not o.creationTime.oclIsUndefined() and&#xA;        o.RestarauntsVisited->forAll(i |&#xA;            i.pendingOrders = i.pendingOrders@pre + 1)"/>
+      </eAnnotations>
+      <eParameters name="o" eType="#//Order"/>
+    </eOperations>
+    <eOperations name="cancelOrder" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="pre_" value="&#xA;        (o.deliveryStatus = orderdeliveryStatus::PLACED or&#xA;         o.deliveryStatus = orderdeliveryStatus::PROCESSING) and&#xA;        (o.payment->notEmpty() implies&#xA;            o.payment.status = PaymentStatus::PAID and&#xA;            o.payment.isRefunded = false)"/>
+        <details key="post_" value="&#xA;        o.deliveryStatus = orderdeliveryStatus::CANCELLED and&#xA;        (o.payment->notEmpty() implies&#xA;            o.payment.status = PaymentStatus::REFUNDED and&#xA;            o.payment.isRefunded = true) and&#xA;        o.RestarauntsVisited->forAll(i |&#xA;            i.pendingOrders = i.pendingOrders@pre - 1)"/>
+      </eAnnotations>
+      <eParameters name="o" eType="#//Order"/>
+    </eOperations>
+    <eOperations name="applyDiscount" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="order" eType="#//Order"/>
+      <eParameters name="applydiscount" eType="#//DiscountCoupon"/>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="email" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="phoneNo" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="loyalitypoints" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="accountStatus" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isGoldTier" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="derivation" value="self.loyalitypoints >= 100"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="order" upperBound="-1"
+        eType="#//Order" eOpposite="#//Order/customer"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="reviews" upperBound="-1"
+        eType="#//Review" eOpposite="#//Review/reviewer"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="restaurantsVisited" upperBound="-1"
+        eType="#//Restaurant" eOpposite="#//Restaurant/CustomersServed"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Restaurant">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="AtLeastOneMenuItem AvgRatingBetween1and5 OnlyAcceptIfOpen PositivePrices MenuItemCanBeAdded RespectDailyCapacity UniqueMenuItemPerCategory"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+      <details key="AtLeastOneMenuItem" value="&#xA;        self.offers->size() >= 1"/>
+      <details key="AvgRatingBetween1and5" value="&#xA;        self.averageRating.oclIsUndefined() or &#xA;        (self.averageRating >= 1 and self.averageRating &lt;= 5)"/>
+      <details key="OnlyAcceptIfOpen" value="&#xA;&#x9;&#x9;if self.isOpen=true then acceptOrder=true else acceptOrder= false endif"/>
+      <details key="PositivePrices" value="&#xA;        self.offers->forAll(m | m.price.oclIsUndefined() or m.price > 0)"/>
+      <details key="MenuItemCanBeAdded" value="&#xA;        self.offers->select(m | m.instock = true)->forAll(m | m.prepTime &lt;= self.maxPrepTime)"/>
+      <details key="RespectDailyCapacity" value="&#xA;        self.isOpen implies &#xA;        self.CustomersServed->select(o | o.deliveryStatus &lt;> orderdeliveryStatus::CANCELLED)->size() &lt; self.dailyCapacity"/>
+      <details key="UniqueMenuItemPerCategory" value="&#xA;      self.offers->forAll(m1, m2 |    m1 &lt;> m2 implies m1.name &lt;> m2.name or m1.category &lt;> m2.category)"/>
+    </eAnnotations>
+    <eOperations name="addMenuItem" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="pre_" value="&#xA;        self.offers->forAll(m |&#xA;            m.name &lt;> item.name or m.category &lt;> item.category) and&#xA;        item.price > 0"/>
+        <details key="post_" value="&#xA;        self.offers->includes(item) and&#xA;        self.menuVersion = self.menuVersion@pre + 1"/>
+      </eAnnotations>
+      <eParameters name="item" eType="#//MenuItem"/>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isOpen" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="noDiscountPartnership"
+        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="acceptOrder" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="maxPrepTime" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="dailyCapacity" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="menuVersion" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="averageRating" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"
+        derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+        <details key="derivation" value="&#xA;       let validRatings = self.reviewedRestaurant->select(r | not r.rating.oclIsUndefined()) in&#xA;       if validRatings->isEmpty() then&#xA;        null&#xA;      else&#xA;        validRatings->collect(r | r.rating)->sum() / validRatings->size()&#xA;      endif"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="location" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="areaCode" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="pendingOrders" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="offers" upperBound="-1"
+        eType="#//MenuItem" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="reviewedRestaurant" upperBound="-1"
+        eType="#//Review" eOpposite="#//Review/rateng"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="CustomersServed" upperBound="-1"
+        eType="#//Order" eOpposite="#//Order/RestarauntsVisited"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="agentsdelivering" upperBound="-1"
+        eType="#//DeliveryAgent" eOpposite="#//DeliveryAgent/resturauntsServerd"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="customersServed" upperBound="-1"
+        eType="#//Customer" eOpposite="#//Customer/restaurantsVisited"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SystemClock">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="estimatedDeliveryTime"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//DateTime"/>
+  </eClassifiers>
+</ecore:EPackage>

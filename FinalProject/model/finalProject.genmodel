@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    modelDirectory="/FinalProject/src-gen" creationIcons="false" editDirectory="/FinalProject.edit/src-gen"
+    editorDirectory="/FinalProject.editor/src-gen" modelPluginID="FinalProject" modelName="FinalProject"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" codeFormatting="true"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="21.0" copyrightFields="false"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>finalProject.ecore</foreignModel>
+  <testsDirectory xsi:nil="true"/>
+  <genPackages prefix="FinalProject" disposableProviderFactory="true" ecorePackage="finalProject.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="finalProject.ecore#//orderdeliveryStatus">
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//orderdeliveryStatus/PLACED"/>
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//orderdeliveryStatus/PROCESSING"/>
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//orderdeliveryStatus/READY_FOR_DELIVERY"/>
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//orderdeliveryStatus/DISPATCHED"/>
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//orderdeliveryStatus/ON_THE_WAY"/>
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//orderdeliveryStatus/DELIVERED"/>
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//orderdeliveryStatus/CANCELLED"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="finalProject.ecore#//PaymentStatus">
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//PaymentStatus/PAID"/>
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//PaymentStatus/UNPAID"/>
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//PaymentStatus/REFUNDED"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="finalProject.ecore#//DeliveryAgentStatus">
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//DeliveryAgentStatus/AVAILABLE"/>
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//DeliveryAgentStatus/BUSY"/>
+      <genEnumLiterals ecoreEnumLiteral="finalProject.ecore#//DeliveryAgentStatus/OFFLINE"/>
+    </genEnums>
+    <genClasses ecoreClass="finalProject.ecore#//Order">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/previousStatus"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/estimatedDeliveryTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/creationTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/deliveryStatus"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/finalPrice"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/totalPrice"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/refundAmount"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/isDelayed"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/deliveryFee"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/location"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/areaCode"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/status"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Order/serviceFee"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference finalProject.ecore#//Order/payment"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference finalProject.ecore#//Order/writtenFor"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference finalProject.ecore#//Order/items"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Order/assignedTo"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Order/customer"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Order/RestarauntsVisited"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Order/appliedCoupon"/>
+      <genOperations ecoreOperation="finalProject.ecore#//Order/markDelivered">
+        <genParameters ecoreParameter="finalProject.ecore#//Order/markDelivered/o"/>
+      </genOperations>
+      <genOperations ecoreOperation="finalProject.ecore#//Order/assignDeliveryAgent">
+        <genParameters ecoreParameter="finalProject.ecore#//Order/assignDeliveryAgent/agent"/>
+      </genOperations>
+      <genOperations ecoreOperation="finalProject.ecore#//Order/updateDeliveryStatus">
+        <genParameters ecoreParameter="finalProject.ecore#//Order/updateDeliveryStatus/newStatus"/>
+      </genOperations>
+      <genOperations ecoreOperation="finalProject.ecore#//Order/calculateDistance"/>
+      <genOperations ecoreOperation="finalProject.ecore#//Order/reviewOrder">
+        <genParameters ecoreParameter="finalProject.ecore#//Order/reviewOrder/comment"/>
+        <genParameters ecoreParameter="finalProject.ecore#//Order/reviewOrder/rating"/>
+      </genOperations>
+      <genOperations ecoreOperation="finalProject.ecore#//Order/applyDiscount">
+        <genParameters ecoreParameter="finalProject.ecore#//Order/applyDiscount/coupon"/>
+      </genOperations>
+    </genClasses>
+    <genClasses ecoreClass="finalProject.ecore#//Payment">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Payment/transactionId"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Payment/amount"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Payment/serviceFee"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Payment/isRefunded"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Payment/status"/>
+      <genOperations ecoreOperation="finalProject.ecore#//Payment/processRefund"/>
+    </genClasses>
+    <genClasses ecoreClass="finalProject.ecore#//Review">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Review/date"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Review/comment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Review/rating"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Review/rateng"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Review/reviewer"/>
+    </genClasses>
+    <genClasses ecoreClass="finalProject.ecore#//DiscountCoupon">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//DiscountCoupon/amount"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//DiscountCoupon/isValid"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//DiscountCoupon/applicableRestaurant"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//DiscountCoupon/isUsed"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//DiscountCoupon/discountedOrder"/>
+    </genClasses>
+    <genClasses ecoreClass="finalProject.ecore#//DeliveryAgent">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//DeliveryAgent/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//DeliveryAgent/status"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//DeliveryAgent/currentLocation"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//DeliveryAgent/completedOrders"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//DeliveryAgent/assignedOrders"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//DeliveryAgent/areaCode"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//DeliveryAgent/delivers"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//DeliveryAgent/resturauntsServerd"/>
+      <genOperations ecoreOperation="finalProject.ecore#//DeliveryAgent/isAvailable"/>
+      <genOperations ecoreOperation="finalProject.ecore#//DeliveryAgent/withinServiceArea">
+        <genParameters ecoreParameter="finalProject.ecore#//DeliveryAgent/withinServiceArea/order"/>
+      </genOperations>
+    </genClasses>
+    <genClasses ecoreClass="finalProject.ecore#//MenuItem">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//MenuItem/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//MenuItem/category"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//MenuItem/price"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//MenuItem/prepTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//MenuItem/instock"/>
+    </genClasses>
+    <genClasses ecoreClass="finalProject.ecore#//Customer">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Customer/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Customer/email"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Customer/phoneNo"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Customer/loyalitypoints"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Customer/accountStatus"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Customer/isGoldTier"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Customer/order"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Customer/reviews"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Customer/restaurantsVisited"/>
+      <genOperations ecoreOperation="finalProject.ecore#//Customer/placeOrder">
+        <genParameters ecoreParameter="finalProject.ecore#//Customer/placeOrder/o"/>
+      </genOperations>
+      <genOperations ecoreOperation="finalProject.ecore#//Customer/cancelOrder">
+        <genParameters ecoreParameter="finalProject.ecore#//Customer/cancelOrder/o"/>
+      </genOperations>
+      <genOperations ecoreOperation="finalProject.ecore#//Customer/applyDiscount">
+        <genParameters ecoreParameter="finalProject.ecore#//Customer/applyDiscount/order"/>
+        <genParameters ecoreParameter="finalProject.ecore#//Customer/applyDiscount/applydiscount"/>
+      </genOperations>
+    </genClasses>
+    <genClasses ecoreClass="finalProject.ecore#//Restaurant">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Restaurant/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Restaurant/isOpen"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Restaurant/acceptOrder"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Restaurant/maxPrepTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Restaurant/dailyCapacity"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Restaurant/menuVersion"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Restaurant/averageRating"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Restaurant/location"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Restaurant/areaCode"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//Restaurant/pendingOrders"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference finalProject.ecore#//Restaurant/offers"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Restaurant/reviewedRestaurant"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Restaurant/CustomersServed"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Restaurant/agentsdelivering"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference finalProject.ecore#//Restaurant/customersServed"/>
+      <genOperations ecoreOperation="finalProject.ecore#//Restaurant/addMenuItem">
+        <genParameters ecoreParameter="finalProject.ecore#//Restaurant/addMenuItem/item"/>
+      </genOperations>
+    </genClasses>
+    <genClasses ecoreClass="finalProject.ecore#//SystemClock">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute finalProject.ecore#//SystemClock/estimatedDeliveryTime"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
